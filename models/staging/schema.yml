@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+    - name: staging
+      database: zoomcamp-384013
+      schema: nytaxi
+
+      tables:
+        - name: green_tripdata
+        - name: yellow_tripdata
