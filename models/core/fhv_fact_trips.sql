@@ -11,7 +11,6 @@ dim_zones as (
     where borough != 'Unknown'
 )
 select 
--- 'dispatching_base_num', 'pickup_datetime', 'dropOff_datetime', 'PUlocationID', 'DOlocationID', "SR_Flag', 'Affiliated_base_number'
     fhv_data.dispatching_base_num,
     fhv_data.pickup_datetime,
     fhv_data.dropoff_datetime,

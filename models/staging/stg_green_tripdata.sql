@@ -6,6 +6,7 @@ with tripdata as
     row_number() over(partition by vendorid, lpep_pickup_datetime) as rn
     from {{source('staging', 'green_tripdata') }}
     where vendorid is not null
+    order by vendorid, lpep_pickup_datetime
 )
 
 select
