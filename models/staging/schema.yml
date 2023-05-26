@@ -8,6 +8,7 @@ sources:
       tables:
         - name: green_tripdata
         - name: yellow_tripdata
+        - name: fhv_tripdata
 
 models:
     - name: stg_green_tripdata
@@ -51,6 +52,7 @@ models:
               - relationships:
                   to: ref('taxi_zone_lookup')
                   field: locationid
+                  severity: warn
           - name: RateCodeID 
             description: >
                 The final rate code in effect at the end of the trip.
@@ -196,3 +198,50 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+
+    - name: stg_fhv_tripdata
+      description: >
+        Trips made by New York City's for-hire vehicles, including, but not limited to, Uber and Lyft.
+      columns:
+          - name: tripid
+            description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: dispatching_base_num 
+            description: The TLC Base License Number of the base that dispatched the trip
+          - name: pickup_datetime 
+            description: The date and time when the meter was engaged.
+          - name: dropoff_datetime 
+            description: The date and time when the meter was disengaged.
+          - name: pickup_locationid 
+            description: pickup locationid where the meter was engaged.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: dropoff_locationid 
+            description: dropoff locationid where the meter was engaged.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: sr_flag
+            description: >
+              Indicates if the trip was a part of a shared ride chain offered by a
+              High Volume FHV company (e.g. Uber Pool, Lyft Line). For shared trips,
+              the value is 1. For non-shared rides, this field is null.
+            
+              NOTE: For most High Volume FHV companies, only shared rides that were
+              requested AND matched to another shared-ride request over the course of
+              the journey are flagged. However, Lyft (base license numbers B02510 + B02844)
+              also flags rides for which a shared ride was requested but another passenger
+              was not successfully matched to share the trip—therefore, trips records with
+              SR_Flag=1 from those two bases could indicate EITHER a first trip in a shared
+              trip chain OR a trip for which a shared ride was requested but never matched.
+              Users should anticipate an overcount of successfully shared trips completed
+              by Lyft.
